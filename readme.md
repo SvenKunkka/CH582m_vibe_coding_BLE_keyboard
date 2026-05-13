@@ -1,146 +1,176 @@
-# Vibe coding Keyboard
-> The four-key numeric keypad (voice input, YES, NO, automatic approval, dual-mode input, RGB color lights, animated display, etc.) is compatible with Claude. / 四键小键盘（语音输入，YES，NO，自动批准，双模输入，RGB彩灯，显示动图等）适配claude
+# CH582m Mac-Friendly Vibe Coding Keyboard Firmware
 
-## Language / 语言选择
-- [English](#english)
-- [中文](#中文)
+基于官方 [CH582m_vibe_coding_BLE_keyboard](https://github.com/XiaoQiaoAI/CH582m_vibe_coding_BLE_keyboard) 项目的 Mac 兼容固件分支。
 
----
+## 主要修改
 
-## English
-### 1. Introduction
-[Keyboard video display](https://x.com/zhngxnyng199073/status/2024706634443084056?s=20)
+### 1. 按键功能重新定义 ⌨️
 
-**A physical control keyboard built for Claude Code – with physical buttons, OLED screen, RGB LED, and voice input. Fully open source, infinitely customizable.**
+从左到右四颗按键功能：
 
-- **Four physical buttons**
-  - ✅ **Green**: Approve command
-  - ❌ **Red**: Reject command
-  - 🎤 **Blue**: Press and hold to speak, release to send text to Claude (voice-to-text)
-  - ⚙️ **Custom key**: Default is Enter, can be freely customized
-    
-- **Toggle switch** – Flip gently to switch between **auto-approval** and **manual mode**
+| 按键位置 | 功能 | 说明 |
+|---------|------|------|
+| 1 (最左) | 🎤 麦克风 | 触发语音输入 |
+| 2 | ✅ 允许 | 发送 Return (回车) 键 |
+| 3 | ❌ 不允许 | 发送 Escape 键 |
+| 4 (最右) | ↵ 回车 | 发送 Return (回车) 键 |
 
-- **Dual-mode** – Both **Type-C** and **Bluetooth** connections, charge via Type-C when battery is low
+### 2. 智能 RGB 灯效 🌈
 
-- **0.96-inch OLED screen**
-  - Displays current status, cute pixel art, or your uploaded custom images/animations (anime characters, memes, etc.)
-  - Built-in mini-games are under development
+**灯效模式**：彩虹波浪来回移动效果
 
-- **8 RGB LEDs (WS2812B)**
-  - Corresponding light feedback for each status: Idle, Working, Waiting for approval, Auto mode, Voice input, etc.
-  - Light colors and effects are fully customizable
+**状态控制逻辑**：
 
-- **Platform compatibility** – Currently only supports Windows; macOS / Linux support is coming soon
+| AI 工作状态 | 灯效表现 |
+|------------|---------|
+| 空闲 (无任务) | 灯光全灭 |
+| 工作中 (AI 正在写代码) | 彩虹波浪来回移动动画 |
+| 等待批准 | 动画冻结在当前位置 |
+| 批准后 | 动画继续从冻结位置运行 |
 
-### 2. Workflow
-Keyboard device <-> BLE <-> Computer (Developed in C, a Bluetooth HID keyboard with custom service characteristics for data transmission, `this repository`)
+### 3. Mac 兼容性 🍎
 
-BLE <-> BLE_tcp_driver.exe <-> TCP interface (Developed in C#, GUI, Windows only, needs to run in the background) `Tried Python's bleak library, but it didn't work because this is an HID device. It doesn't broadcast after connecting to the computer, and the computer will actively connect to the device after pairing, making bleak unable to find the Bluetooth device, and direct connection via MAC address fails.`
+- 使用标准 USB HID Keyboard 协议
+- HID Keycode 与 macOS 完全兼容
+- 支持 Command、Option 等 Mac 特有修饰键
 
-TCP interface <-> Host software (for configuration modification, developed in Python with GUI)
+### 4. 拨杆功能保持不变
 
-TCP interface <-> Claude hook program (reports Claude status, Python script)
+拨杆仍控制自动批准和手动模式切换，功能不变。
 
-### 3. Software Description for This Repository
-- Compilation software: `MounRiver Studio`
-- Download software: `WCHISP Studio`
+## 项目结构
 
-### 4. How to Build
-1. Download the official SDK: `https://www.wch.cn/downloads/CH583EVT_ZIP.html`
-2. Place the code from this repository into the `EXAM\BLE` directory (refer to other example projects for placement)
-3. Open the project file `HID_Keyboard_582m_vibe_coding.wvproj`
-4. The output file is located at `obj\HID_Keyboard_582m_vibe_coding.hex`
+```
+CH582m_Mac_Firmware/
+├── APP/
+│   ├── sub_main/
+│   │   ├── psk_ws2812.c/h        # 彩虹来回波浪灯效
+│   │   └── ai_state_machine.c/h  # AI 状态机控制
+│   └── hardware/
+│       ├── psk_multi_button.c/h   # 按键驱动 (已修改)
+│       └── mac_keyboard_map.c/h   # Mac 键盘映射
+├── Profile/
+└── hard_ware/
+```
 
-### 5. How to Download
-1. Install wchisp, control the chip to enter boot mode, and download the program via USB
-2. The boot pin is not convenient to manually operate for now
+## 新增文件说明
 
-### 6. Quick Start
-#### 1️⃣ Get the Hardware
-Two options:
-- **DIY**: Will be open sourced on Lichuang Open Source Plaza soon
-- **Purchase a kit**: We provide complete DIY hardware packages (PCB + all components + USB cable + acrylic case + keycaps and switches), as well as ready-to-use versions，Tell the customer service the password "Github Developer" to claim a large discount coupon. – [Claude external custom keyboard](https://e.tb.cn/h.7Ceul3q1qmKK51M?tk=S6nIUnuIiBV). Join the keyboard open source discussion QQ group: 1082678922
+### `psk_ws2812.h/c`
 
-#### 2️⃣ Get Firmware, Host Software, and Full Tutorials
-[Click to download the latest keyboard firmware package](https://github.com/XiaoQiaoAI/CH582m_vibe_coding_BLE_keyboard/releases/tag/v1.0)
+新增 `WS2812_RAINBOW_BOUNCE` 灯效模式，实现彩虹波浪来回移动效果：
 
-### 7. Edit the Whole Project
-- [Keyboard firmware code](https://github.com/XiaoQiaoAI/CH582m_vibe_coding_BLE_keyboard)
-- [Keyboard-computer bridge software](https://github.com/XiaoQiaoAI/BLE_tcp_bridge_for_vibe_code)
-- [Computer host software - Hook and customization tool](https://github.com/XiaoQiaoAI/vibe_code_config_tool)
+```c
+// 新增灯效枚举
+enum ws2812_mode_e {
+    WS2812_OFF = 0x0,
+    WS2812_RAINBOW_BOUNCE,  // 新增：彩虹来回波浪
+    // ... 其他模式
+};
 
-GIF author [x: @downvote_me](https://x.com/downvote_me)
+// 控制函数
+void ws2812_set_bounce_paused(uint8_t paused);  // 暂停/恢复动画
+uint8_t ws2812_is_bounce_paused(void);          // 查询暂停状态
+```
 
----
+### `ai_state_machine.h/c`
 
-## 中文
-### 1. 功能介绍
-[键盘展示视频](https://www.bilibili.com/video/BV1C6ZMBgEcM/?spm_id_from=333.1387.0.0&vd_source=df25740f1d3732101203e58b2e2a6026)
+AI 工作状态机：
 
-**为 Claude Code 打造的物理控制键盘 – 带实体按键、OLED 屏幕、RGB LED 和语音输入。完全开源，无限自定义。**
+```c
+typedef enum {
+    AI_STATE_IDLE = 0,           // 空闲，灯灭
+    AI_STATE_WORKING,             // 工作中，彩虹动画
+    AI_STATE_WAITING_ALLOW,       // 等待批准，动画冻结
+    AI_STATE_ALLOWED,             // 批准后，恢复动画
+    AI_STATE_DISALLOWED           // 拒绝后，灯灭
+} ai_work_state_t;
+```
 
-- **四个实体按键**
-  - ✅ **绿色**：批准命令
-  - ❌ **红色**：拒绝命令
-  - 🎤 **蓝色**：按住说话，松开发送文字给 Claude（语音转文字）
-  - ⚙️ **自定义键**：默认为 回车，可随意更改功能
-    
-- **拨杆开关** – 轻轻一拨，在**自动批准**和**手动模式**之间切换
+### `mac_keyboard_map.h/c`
 
-- **双模** - **type-C**连接和**蓝牙**连接两种方式，没电了type-C充电即可
+Mac 键盘映射和按键处理：
 
-- **0.96英寸 OLED 屏幕**
-  - 显示当前状态、可爱像素图，或者你上传的自定义图片、动图（动漫角色、表情包……）
-  - 内置小游戏正在开发中
+```c
+typedef enum {
+    KEY_FUNC_MIC = 0,     // 麦克风
+    KEY_FUNC_ALLOW,       // 允许 (Return)
+    KEY_FUNC_DISALLOW,    // 不允许 (Escape)
+    KEY_FUNC_ENTER,       // 回车 (Return)
+    KEY_FUNC_POWER        // 电源键
+} mac_key_function_t;
+```
 
-- **8颗 RGB LED（WS2812B）**
-  - 每种状态都有对应的灯光反馈：空闲、工作中、等待批准、自动模式、语音输入……
-  - 灯光颜色和效果完全可自定义
+## 构建说明
 
-- **平台兼容** – 目前只支持Windows , macOS / Linux 正在路上，挖坑ing
+### 环境要求
 
-### 2. 工作流程
-键盘设备 <-> BLE <-> 电脑 (c开发, 是个蓝牙HID键盘, 具备自定义服务特征传输数据, `本仓库`)
+- **IDE**: MounRiver Studio
+- **SDK**: WCH CH583EVT (需要从 [WCH 官网](https://www.wch.cn/downloads/CH583EVT_ZIP.html) 下载)
+- **下载工具**: WCHISP Studio
 
-BLE <-> BLE_tcp_driver.exe <-> TCP接口 (c#开发, 图形化界面, 只有windows, 需要常态开启)`试过python的bleak库, 无法使用, 因为这是一个hid设备, 连接电脑后没开广播, 而且和电脑绑定后电脑会主动连接设备, 导致bleak搜不到蓝牙, 直接根据mac连接失败`
+### 构建步骤
 
-TCP接口 <-> 上位机, 修改配置 (Python开发, 图形化界面)
+1. 下载官方 SDK：`https://www.wch.cn/downloads/CH583EVT_ZIP.html`
 
-TCP接口 <-> claude hook程序, 上报claude状态 (Python开发, 脚本)
+2. 将本项目代码放到 SDK 的 `EXAM\BLE` 目录下
 
-### 3. 该仓库软件说明
-编译软件 `MounRiver Studio`
+3. 使用 MounRiver Studio 打开工程文件：
+   ```
+   HID_Keyboard_582m_vibe_coding.wvproj
+   ```
 
-下载软件 `WCHISP Studio`
+4. 编译项目，输出文件位于：
+   ```
+   obj\HID_Keyboard_582m_vibe_coding.hex
+   ```
 
-### 4. How to Build
-1. 下载官方sdk: `https://www.wch.cn/downloads/CH583EVT_ZIP.html`
-2. 把仓库里的代码放到 `EXAM\BLE` 目录下(参考其他例程放置)
-3. 打开工程文件 `HID_Keyboard_582m_vibe_coding.wvproj`
-4. 结果文件在 `obj\HID_Keyboard_582m_vibe_coding.hex`
+### 下载固件
 
-### 5. How to Download
-1. 安装wchisp, 控制芯片进boot模式, 通过usb进行程序下载
-2. 暂时boot引脚还不方便手动搞
+1. 安装 WCHISP Studio
+2. 将芯片进入 Boot 模式
+3. 通过 USB 下载程序
 
-### 6. 快速上手
-#### 1️⃣ 获取硬件
-两种方式：
-- **自己动手**：板子的原理图在hard_ware里。
-- **购买套件**：我们提供完整的 DIY 硬件包（PCB + 所有元件 + USB 线 + 亚克力外壳+键帽键轴），也提供开箱即用的完整版，告诉客服口令“Github开发者”，领取大额优惠券 – [claude外接自定义键盘](https://e.tb.cn/h.7Ceul3q1qmKK51M?tk=S6nIUnuIiBV)。键盘开源讨论qq群（1082678922）
+## 与原项目的差异
 
-#### 2️⃣ 获取固件，上位机等全套封装好的软件，教程
-[点击下载最新版键盘固件包](https://github.com/XiaoQiaoAI/CH582m_vibe_coding_BLE_keyboard/releases/tag/v1.0)
+| 功能 | 原项目 | 本分支 |
+|------|--------|--------|
+| 按键 1 | 批准 (绿色) | 麦克风 |
+| 按键 2 | 拒绝 (红色) | 允许 (Return) |
+| 按键 3 | 自动批准 | 不允许 (Escape) |
+| 按键 4 | 回车 | 回车 (Return) |
+| 灯效 | 多种渐变效果 | 彩虹来回波浪 + 状态控制 |
+| 平台 | Windows | macOS (兼容 Windows) |
 
-### 7. 编辑整个工程，修改⚙️
-[键盘固件代码](https://github.com/XiaoQiaoAI/CH582m_vibe_coding_BLE_keyboard)
+## 使用场景
 
-展示里面的动图作者:[x: @downvote_me](https://x.com/downvote_me)
+本固件专为以下使用场景设计：
 
+1. **AI 编程辅助工具**：配合 Claude Code、Cursor 等 AI 编程工具使用
+2. **Mac 用户**：使用 Mac 进行开发的用户
+3. **简洁控制**：只需要简单的允许/拒绝/回车操作
 
+## HID Keycode 参考
 
+本固件使用的 HID Keycode 与 USB HID Usage Table 标准一致：
 
-非商业用途开源许可协议 (Non-Commercial Open Source License)
-版权所有 (c) [2026] [XiaoQiaoAI]
-禁止商用
+- `0x28` - Return/Enter
+- `0x29` - Escape
+- `0xE3` - Left Command (⌘)
+- `0xE4` - Right Command
+- `0xE5` - Left Shift
+- `0xE6` - Right Shift
+
+## 注意事项
+
+1. **语音输入**：麦克风键需要配合上位机软件或系统语音识别功能使用
+2. **灯效控制**：AI 状态切换需要通过蓝牙或 USB 接收外部指令
+3. **兼容性**：本固件使用标准 HID 协议，理论上支持 macOS、Windows、Linux
+
+## 许可证
+
+本项目遵循原项目的非商业开源许可证协议。
+
+## 致谢
+
+- 原项目：[CH582m_vibe_coding_BLE_keyboard](https://github.com/XiaoQiaoAI/CH582m_vibe_coding_BLE_keyboard)
+- 芯片厂商：南京沁恒微电子股份有限公司 (WCH)
