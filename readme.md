@@ -1,3 +1,7 @@
+<!-- SVENKUNKKA-README-NAV:BEGIN -->
+[中文项目说明](#project-overview-zh) · [English overview](#project-overview-en) · [维护者 X / Maintainer on X](https://x.com/Svenu1s5)
+<!-- SVENKUNKKA-README-NAV:END -->
+
 # Vibe coding Keyboard
 > The four-key numeric keypad (voice input, YES, NO, automatic approval, dual-mode input, RGB color lights, animated display, etc.) is compatible with Claude. / 四键小键盘（语音输入，YES，NO，自动批准，双模输入，RGB彩灯，显示动图等）适配claude
 
@@ -144,3 +148,32 @@ TCP接口 <-> claude hook程序, 上报claude状态 (Python开发, 脚本)
 非商业用途开源许可协议 (Non-Commercial Open Source License)
 版权所有 (c) [2026] [XiaoQiaoAI]
 禁止商用
+
+
+---
+
+<!-- SVENKUNKKA-PROJECT-INFO:BEGIN -->
+
+<a id="project-overview-zh"></a>
+## 中文项目说明
+
+CH582M 四键控制键盘固件分支，围绕 Claude Code 的批准、拒绝、语音及自定义按键交互，配套 OLED 和 RGB 状态显示。来源为 [TheNorthStarYang](https://github.com/TheNorthStarYang/CH582m_vibe_coding_keyboard) 的分支，README 保留 XiaoQiaoAI 项目归属。
+
+**使用入口：** 下载 WCH CH583 SDK，将代码放入 `EXAM/BLE`，使用 MounRiver Studio 打开 `HID_Keyboard_582m_vibe_coding.wvproj`；烧录和上位机步骤见 README。
+
+**范围说明：** README 描述的电脑桥接程序仅支持 Windows，不能仅凭分支名称推断 macOS 已可用；原文注明非商业用途许可，需遵守其限制。
+
+<a id="project-overview-en"></a>
+## English project overview
+
+A CH582M four-key control-keyboard firmware fork for Claude Code approval, rejection, voice and custom-key interactions, with OLED and RGB status display. Forked from [TheNorthStarYang](https://github.com/TheNorthStarYang/CH582m_vibe_coding_keyboard); the README retains XiaoQiaoAI provenance.
+
+**Getting started:** Download the WCH CH583 SDK, place the code under `EXAM/BLE`, and open `HID_Keyboard_582m_vibe_coding.wvproj` in MounRiver Studio. Follow the README for flashing and host software.
+
+**Scope:** The documented desktop bridge is Windows-only; the branch name alone does not establish macOS support. The original text specifies a non-commercial license whose restrictions must be respected.
+
+**本 Fork 的维护者 / Maintainer of this fork:** [SvenKunkka](https://github.com/SvenKunkka) · [X / Twitter](https://x.com/Svenu1s5)
+
+**上游项目 / Upstream:** [TheNorthStarYang/CH582m_vibe_coding_keyboard](https://github.com/TheNorthStarYang/CH582m_vibe_coding_keyboard)。保留原作者署名与原许可证 / Original authorship and license notices are retained.
+
+<!-- SVENKUNKKA-PROJECT-INFO:END -->
